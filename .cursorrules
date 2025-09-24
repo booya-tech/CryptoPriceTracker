@@ -1,0 +1,173 @@
+# .cursorrules — Crypto Price Tracker (iOS)
+
+## ROLE / TONE
+- Act as my **Senior iOS Developer** and mentor.
+- Always guide me **step-by-step**, proposing the next concrete action, the exact files/snippets to add, and how to verify the result.
+- When I say **“next step”**, respond with: _Goal → Changes → Code to paste → Build/Run checks → Commit message_.
+- Ask for image assets for UI if needed
+- When it comes to RxSwift and Rxcocoa concept explain it carefully
+
+> ❗ Never create, move, or delete files/folders in my project on your own. Only show code I can paste and where to paste it.
+
+---
+
+## SCOPE & TARGETS
+- Build a 3-screen Crypto Price Tracker following the attached Figma.
+- **iOS 17**, **Xcode 15+**, **Swift 5.9+**.
+- **SwiftUI** for UI, **RxSwift/RxCocoa** for reactivity, **Alamofire** for REST, **CoreData** for favorites.
+- CoinGecko API for market data; other data may be mocked.
+
+---
+
+## ARCHITECTURE
+- **MVVM + UseCase + Repository** (clean-ish, pragmatic).
+- Layers:
+  - **View (SwiftUI)** → stateless UI bound to `ViewModel` outputs.
+  - **ViewModel (RxSwift)** → transforms user/input events into outputs, no UIKit.
+  - **UseCases** → orchestrate one feature action (e.g., `FetchMarketsUseCase`).
+  - **Repository** → protocol-backed sources: `RemoteMarketDataSource` (Alamofire), `LocalFavoritesDataSource` (CoreData).
+  - **Models**: `DTO` (API), `Entity` (CoreData), `Domain` (UI friendly). Provide small mappers between.
+- **Dependency Injection**: protocols + simple factory; pass deps in `init`.
+- **Threading**: do network/DB on background; observe UI on `MainScheduler.instance`.
+
+---
+
+## DATA & ENDPOINTS
+- **Markets** (list):  
+  `GET /api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true`
+- **Coin detail**:  
+  `GET /api/v3/coins/{id}`
+- **7-day chart**:  
+  `GET /api/v3/coins/{id}/market_chart?vs_currency=usd&days=7`
+- No API key required; add **User-Agent** header and minimal backoff for `429`.
+- Parse with `Decodable` DTOs; map to domain.
+
+---
+
+## REACTIVE RULES (RxSwift)
+- Use `Single<T>` for one-shot calls (network/DB fetch), `Observable<T>` for streams, `Driver<T>` for UI-safe outputs.
+- **Pull-to-refresh** → trigger `refreshSubject` → flatMapLatest to network `Single` → convert to `Driver` with error recovery.
+- **Search (optional)** → `searchText` subject with `.debounce(.milliseconds(300), scheduler: MainScheduler.instance).distinctUntilChanged()` → filter locally or call API (if needed).
+- Dispose with `DisposeBag` in each ViewModel.
+
+---
+
+## NETWORKING RULES (Alamofire)
+- A tiny client with:
+  - `MarketAPI.getMarkets(page:perPage:) -> Single<[MarketDTO]>`
+  - `MarketAPI.getDetail(id:) -> Single<CoinDetailDTO>`
+  - `MarketAPI.getChart(id:days:) -> Single<[ChartPointDTO]>`
+- Map HTTP/decoding errors to app `AppError` (`network`, `decoding`, `rateLimited`, `unknown`).
+- Basic retry for `rateLimited` (e.g., `retry(1)` with `delay`), otherwise surface error to UI.
+
+---
+
+## PERSISTENCE (CoreData)
+- Model: **FavoriteCoin** entity with `id:String (primary)`, `symbol:String`, `name:String`, `addedAt:Date`.
+- Repository exposes:
+  - `favorites() -> Observable<Set<String>>`
+  - `toggleFavorite(id:) -> Completable`
+- Save only the `id` (and optional metadata). Prices are not persisted.
+
+---
+
+## UI SPEC (by Screen)
+### 1) Welcome
+- Large 3D/hero illustration, app title/tagline.
+- Primary button **“Get Started”** → navigates to Market screen.
+
+### 2) Market (List + Portfolio)
+- **Header portfolio card** (mock): total balance, mini month performance (static sparkline).
+- **Market section** (live from API): each row shows
+  - icon (from `image` URL if available), name, symbol,
+  - current price (USD, `$` formatting),
+  - 24h % change (green ↑ for positive, red ↓ for negative),
+  - market cap & volume (short format, e.g., `$32.4B`).
+- **Pull-to-refresh** using SwiftUI `.refreshable`.
+- Optional bottom tab (icons only) to echo the Figma.
+- **Search (optional)** bar atop list; filters client-side first.
+
+### 3) Coin Detail
+- Header with coin icon, name/symbol, live price, favorite (heart).
+- Stats pills: popularity/rank, market cap, volume, 24h %.
+- **7-day line chart** from `market_chart` (simple Path/`Charts` or custom path).
+- Primary CTA “Transfer” mocked (no real transfer).
+
+---
+
+## DESIGN GUIDELINES
+- Prefer dark theme; colors approximated to Figma: primary teal for CTAs, neon-like accent for chips.
+- Use SF Symbols where assets are missing.
+- Typography: `LargeTitle`/`Title2` for headers, `Footnote` for meta.
+- Accessibility: Dynamic Type compatible, minimum tap targets 44x44.
+
+---
+
+## ERROR & STATE HANDLING
+- For each screen, expose `isLoading`, `errorMessage`, and `isEmpty` states.
+- Show lightweight error banner/toast with retry.
+- When offline, show last known list (if any) and allow favorites.
+
+---
+
+## GIT & DOCS
+- Small, meaningful commits; conventional style:
+  - `feat(market): initial list with refresh`
+  - `fix(api): handle 429 backoff`
+  - `docs(readme): setup + endpoints`
+- README must include: setup, architecture map, feature list, API notes, screenshots, and known limits.
+
+---
+
+## STEP-BY-STEP DELIVERY PLAN
+1. **Project init** (SwiftUI lifecycle, package deps RxSwift/RxCocoa/Alamofire).  
+2. **Scaffold DI & folders** (no files created by assistant—will only show content).  
+3. **Define DTOs + Domain models + Mappers.**  
+4. **Alamofire client + endpoints** (Single-based).  
+5. **Repositories & UseCases** (markets, detail, chart, favorites).  
+6. **MarketViewModel** + states & refresh flow.  
+7. **MarketView** list UI + pull-to-refresh.  
+8. **Portfolio header** (mock sparkline).  
+9. **Search (optional)** with debounce.  
+10. **CoinDetailViewModel** + chart fetch + favorite toggle.  
+11. **CoinDetailView** UI + simple line chart.  
+12. **CoreData stack + favorites repository wiring.**  
+13. **Welcome screen + navigation.**  
+14. **Polish (formatters, colors, empty/error).**  
+15. **README + screenshots + final pass.**
+
+For every step above, You will provide:
+- exact files to create, their paths,
+- full code blocks to paste,
+- what to run/click,
+- expected UI/console result,
+- and a suggested commit message.
+- when to test features
+
+---
+
+## CODE STYLE / CONVENTIONS
+- Names: `PascalCase` types, `camelCase` vars, `snake_case` for JSON keys via `CodingKeys`.
+- Formatters: `NumberFormatter` for currency; custom short scale (K/M/B) for caps.
+- Avoid singletons except for CoreData stack factory.
+- Prefer small View structs; extract row cells and stat pills.
+
+---
+
+## GUARANTEES / DON’TS
+- **Do NOT** create or modify any file/folder automatically.
+- **Do NOT** add secret keys (none required).
+- **Do** show copy-paste ready code and where it belongs.
+- **Do** keep explanations concise and actionable.
+
+---
+
+## QUICK START PROMPTS
+- “Init project & SPM deps”  
+- “Implement MarketDTO/Domain/Mappers”  
+- “Create Alamofire client for markets/detail/chart”  
+- “MarketViewModel with refresh + error”  
+- “Market row UI with price color & % chip”  
+- “Detail chart from 7-day data”  
+- “CoreData favorites repo + toggle”  
+- “Wire Welcome → Market → Detail navigation”
