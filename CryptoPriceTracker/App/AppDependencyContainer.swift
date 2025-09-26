@@ -26,13 +26,12 @@ final class AppDependencyContainer {
     // lazy var localDataSource = LocalFavoritesDataSource()
     
     // MARK: - Repositories (will be implemented later)
-    // lazy var marketRepository = MarketRepository()
-    // lazy var favoritesRepository = FavoritesRepository()
+    lazy var marketRepository: MarketRepositoryProtocol = MarketRepository(marketAPI: marketAPI)
     
     // MARK: - Use Cases (will be implemented later)
-    // lazy var fetchMarketsUseCase = FetchMarketsUseCase()
-    // lazy var fetchCoinDetailUseCase = FetchCoinDetailUseCase()
-    // lazy var toggleFavoriteUseCase = ToggleFavoriteUseCase()
+    lazy var fetchMarketsUseCase: FetchMarketsUseCaseProtocol = FetchMarketsUseCase(marketRepository: marketRepository)
+    lazy var fetchCoinDetailUseCase: FetchCoinDetailUseCaseProtocol = FetchCoinDetailUseCase(marketRepository: marketRepository)
+    lazy var fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol = FetchMarketChartUseCase(marketRepository: marketRepository)
     
     private init() {}
 }
