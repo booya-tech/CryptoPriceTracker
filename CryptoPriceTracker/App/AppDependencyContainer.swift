@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import SwiftUI
+import RxSwift
 
 /// Simple dependency injection container
 final class AppDependencyContainer {
@@ -15,6 +16,10 @@ final class AppDependencyContainer {
     
     // MARK: - Core Data
     lazy var persistenceController = PersistenceController.shared
+    
+    //MARK: - Networking
+    lazy var networkService: NetworkServiceProtocol = NetworkService()
+    lazy var marketAPI: MarketAPIProtocol = MarketAPI(networkService: networkService)
     
     // MARK: - Data Sources (will be implemented later)
     // lazy var remoteDataSource = RemoteMarketDataSource()
