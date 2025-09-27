@@ -53,7 +53,6 @@ struct MarketView: View {
                     viewModel.refresh()
                 }
             }
-            .navigationBarHidden(true)
         }
         .onAppear {
             bindViewModel()

@@ -34,7 +34,15 @@ struct CoinDetailView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         // Coin Detail Header
-                        
+                        CoinDetailHeaderView(
+                            coinDetail: coinDetail,
+                            isFavorite: isFavorite,
+                            onFavoriteToggle: {
+                                viewModel.toggleFavorite()
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
                         // Coin Stats Pill
                         
                         // Time Period Selector
@@ -46,9 +54,19 @@ struct CoinDetailView: View {
                 }
             }
         }
-        .navigationBarHidden(true)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(false)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: viewModel.toggleFavorite) {
+                    Image(systemName: isFavorite ? "heart.fill" : "heart")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(isFavorite ? .red : .white)
+                }
+            }
+        }
         .onAppear() {
-            
+            bindViewModel()
         }
     }
     
