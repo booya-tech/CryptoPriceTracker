@@ -44,7 +44,11 @@ struct CoinDetailView: View {
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
                         // Coin Stats Pill
-                        
+                        if let coin = coinDetail {
+                            StatsRowView(coinDetail: coin)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 30)
+                        }
                         // Time Period Selector
                         
                         // Chart
