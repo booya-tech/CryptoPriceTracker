@@ -34,4 +34,9 @@ final class AppDependencyContainer {
     lazy var fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol = FetchMarketChartUseCase(marketRepository: marketRepository)
     
     private init() {}
+
+    // MARK: - ViewModels
+    func makeMarketViewModel() -> MarketViewModel {
+        return MarketViewModel(fetchMarketsUseCase: fetchMarketsUseCase)
+    }
 }
