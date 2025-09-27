@@ -39,4 +39,12 @@ final class AppDependencyContainer {
     func makeMarketViewModel() -> MarketViewModel {
         return MarketViewModel(fetchMarketsUseCase: fetchMarketsUseCase)
     }
+    
+    func makeCoinDetailViewModel(coinId: String) -> CoinDetailViewModel {
+        return CoinDetailViewModel(
+            coinId: coinId,
+            fetchCoinDetailUseCase: fetchCoinDetailUseCase,
+            fetchMarketChartUseCase: fetchMarketChartUseCase
+        )
+    }
 }
