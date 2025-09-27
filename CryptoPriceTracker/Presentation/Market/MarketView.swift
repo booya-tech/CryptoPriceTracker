@@ -32,14 +32,21 @@ struct MarketView: View {
                             .padding(.horizontal, 20)
                             .padding(.top, 10)
 
-
                         // My Portfolio Section
-
+                        MyPortfolioView()
+                            .padding(.horizontal, 20)
+                            .padding(.top, 30)
 
                         // Refer Rewards Banner Section
-
+                        if showingRewards {
+                            ReferRewardsBanner(isShowing: $showingRewards)
+                                .padding(.horizontal, 20)
+                                .padding(.top, 20)
+                        }
 
                         // Market Statistics Section
+                        MarketStatisticsView(viewModel: viewModel)
+                            .padding(.top, 30)
                     }
                 }
                 .refreshable {
