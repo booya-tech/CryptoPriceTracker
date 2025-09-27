@@ -15,7 +15,7 @@ struct CoinDetailView: View {
     @State private var chartData: [ChartPoint] = []
     @State private var isLoading = false
     @State private var isFavorite = false
-    @State private var selectedTimePeriod: TimePeriod = .oneWeek
+    @State private var selectedTimePeriod: TimePeriod = .oneHour
     @State private var errorMessage: String?
     
     private let disposeBag = DisposeBag()
@@ -50,7 +50,13 @@ struct CoinDetailView: View {
                                 .padding(.top, 30)
                         }
                         // Time Period Selector
-                        
+                        TimePeriodSelectorView(
+                            selectedPeriod: selectedTimePeriod,
+                            onPeriodSelected: { period in
+                                viewModel.selectTimePeriod(period)
+                            }
+                        )
+                        .padding(.top, 30)
                         // Chart
                         
                         // Transfer Button

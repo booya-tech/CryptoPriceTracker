@@ -27,3 +27,16 @@ enum TimePeriod: String, CaseIterable {
         }
     }
 }
+
+extension TimePeriod {
+    var displayText: String {
+        switch self {
+        case .oneHour: return "1H"
+        case .oneDay: return "1D"
+        case .oneWeek: return "1W"
+        case .oneMonth: return "1M"
+        case .oneYear: return "1Y"
+        case .all: return "All"
+        }
+    }
+}
