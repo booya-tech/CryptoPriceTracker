@@ -10,7 +10,6 @@ import RxSwift
 import RxCocoa
 
 final class CoinDetailViewModel {
-    
     // MARK: - Inputs
     private let coinId: String
     private let refreshTrigger = PublishSubject<Void>()
@@ -29,17 +28,23 @@ final class CoinDetailViewModel {
     // MARK: - Private
     private let fetchCoinDetailUseCase: FetchCoinDetailUseCaseProtocol
     private let fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol
+    private let favoriteToggleUseCase: FavoriteToggleUseCaseProtocol
+    private let favoritesRepository: FavoritesRepositoryProtocol  
     private let disposeBag = DisposeBag()
     
     // MARK: - Init
     init(
         coinId: String,
         fetchCoinDetailUseCase: FetchCoinDetailUseCaseProtocol,
-        fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol
+        fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol,
+        favoriteToggleUseCase: FavoriteToggleUseCaseProtocol,
+        favoritesRepository: FavoritesRepositoryProtocol
     ) {
         self.coinId = coinId
         self.fetchCoinDetailUseCase = fetchCoinDetailUseCase
         self.fetchMarketChartUseCase = fetchMarketChartUseCase
+        self.favoriteToggleUseCase = favoriteToggleUseCase
+        self.favoritesRepository = favoritesRepository
         
         // Create activity indicators
         let detailActivityIndicator = ActivityIndicator()
@@ -101,11 +106,23 @@ final class CoinDetailViewModel {
             }
         self.chartData = chartDataObservable.asDriver(onErrorJustReturn: [])
 
-        // Favorite state (placeholder - will implement CoreData later)
-        self.isFavorite = favoriteToggle
-            .scan(false) { currentState, _ in !currentState }
-            .startWith(false)
+        self.isFavorite = favoritesRepository.favoriteIds()
+            .map { favoriteIds in favoriteIds.contains(coinId) }
             .asDriver(onErrorJustReturn: false)
+
+        // Handle favorite toggle
+        favoriteToggle
+            .withLatestFrom(fetchedCoinDetail)
+            .flatMapLatest { [favoriteToggleUseCase] coinDetail -> Observable<Void> in
+                return favoriteToggleUseCase.execute(coinDetail: coinDetail)
+                    .andThen(Observable.just(()))
+                    .catch { error in
+                        print("Failed to toggle favorite: \(error)")
+                        return Observable.just(())
+                    }
+            }
+            .subscribe()
+            .disposed(by: disposeBag)
     }
     
     // MARK: - Public Methods

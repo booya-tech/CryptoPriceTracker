@@ -21,17 +21,19 @@ final class AppDependencyContainer {
     lazy var networkService: NetworkServiceProtocol = NetworkService()
     lazy var marketAPI: MarketAPIProtocol = MarketAPI(networkService: networkService)
     
-    // MARK: - Data Sources (will be implemented later)
-    // lazy var remoteDataSource = RemoteMarketDataSource()
-    // lazy var localDataSource = LocalFavoritesDataSource()
-    
     // MARK: - Repositories (will be implemented later)
     lazy var marketRepository: MarketRepositoryProtocol = MarketRepository(marketAPI: marketAPI)
+    lazy var favoritesRepository: FavoritesRepositoryProtocol = FavoritesRepository(
+        context: persistenceController.container.viewContext
+    )
     
     // MARK: - Use Cases (will be implemented later)
     lazy var fetchMarketsUseCase: FetchMarketsUseCaseProtocol = FetchMarketsUseCase(marketRepository: marketRepository)
     lazy var fetchCoinDetailUseCase: FetchCoinDetailUseCaseProtocol = FetchCoinDetailUseCase(marketRepository: marketRepository)
     lazy var fetchMarketChartUseCase: FetchMarketChartUseCaseProtocol = FetchMarketChartUseCase(marketRepository: marketRepository)
+    lazy var favoriteToggleUseCase: FavoriteToggleUseCaseProtocol = FavoriteToggleUseCase(
+    favoritesRepository: favoritesRepository
+)
     
     private init() {}
 
@@ -44,7 +46,9 @@ final class AppDependencyContainer {
         return CoinDetailViewModel(
             coinId: coinId,
             fetchCoinDetailUseCase: fetchCoinDetailUseCase,
-            fetchMarketChartUseCase: fetchMarketChartUseCase
+            fetchMarketChartUseCase: fetchMarketChartUseCase,
+            favoriteToggleUseCase: favoriteToggleUseCase,
+            favoritesRepository: favoritesRepository
         )
     }
 }
