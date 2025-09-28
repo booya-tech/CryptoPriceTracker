@@ -15,6 +15,7 @@ struct CoinDetailView: View {
     @State private var chartData: [ChartPoint] = []
     @State private var isLoading = false
     @State private var isFavorite = false
+    @State private var isChartLoading = false
     @State private var selectedTimePeriod: TimePeriod = .oneHour
     @State private var errorMessage: String?
     
@@ -29,7 +30,7 @@ struct CoinDetailView: View {
             Color.black.ignoresSafeArea()
             
             if isLoading && coinDetail == nil {
-                // Loading View
+                LoadingView()
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -58,8 +59,20 @@ struct CoinDetailView: View {
                         )
                         .padding(.top, 30)
                         // Chart
-                        
+                        PriceChartView(
+                            chartData: chartData,
+                            isLoading: isChartLoading
+                        )
+                        .padding(.top, 30)
                         // Transfer Button
+                        TransferButtonView(
+                            onTransferTapped: {
+                                // Mock transfer action
+                                print("Transfer btn tapped")
+                            }
+                        )
+                        .padding(.top, 40)
+                        .padding(.bottom, 30)
                     }
                 }
             }
@@ -115,6 +128,12 @@ struct CoinDetailView: View {
         viewModel.errorMessage
             .drive(onNext: { [self] error in
                 self.errorMessage = error
+            })
+            .disposed(by: disposeBag)
+        // Bind chart loading state
+        viewModel.isChartLoading
+            .drive(onNext: { [self] loading in
+                self.isChartLoading = loading
             })
             .disposed(by: disposeBag)
     }

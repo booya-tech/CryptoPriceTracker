@@ -19,39 +19,37 @@ struct MarketView: View {
     }
 
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Bg Color
-                Color.black.ignoresSafeArea()
+        ZStack {
+            // Bg Color
+            Color.black.ignoresSafeArea()
 
-                // ScrollView
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        // Portfolio Header
-                        PortfolioHeaderView()
+            // ScrollView
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    // Portfolio Header
+                    PortfolioHeaderView()
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+
+                    // My Portfolio Section
+                    MyPortfolioView()
+                        .padding(.horizontal, 20)
+                        .padding(.top, 30)
+
+                    // Refer Rewards Banner Section
+                    if showingRewards {
+                        ReferRewardsBanner(isShowing: $showingRewards)
                             .padding(.horizontal, 20)
-                            .padding(.top, 10)
-
-                        // My Portfolio Section
-                        MyPortfolioView()
-                            .padding(.horizontal, 20)
-                            .padding(.top, 30)
-
-                        // Refer Rewards Banner Section
-                        if showingRewards {
-                            ReferRewardsBanner(isShowing: $showingRewards)
-                                .padding(.horizontal, 20)
-                                .padding(.top, 20)
-                        }
-
-                        // Market Statistics Section
-                        MarketStatisticsView(viewModel: viewModel)
-                            .padding(.top, 30)
+                            .padding(.top, 20)
                     }
+
+                    // Market Statistics Section
+                    MarketStatisticsView(viewModel: viewModel)
+                        .padding(.top, 30)
                 }
-                .refreshable {
-                    viewModel.refresh()
-                }
+            }
+            .refreshable {
+                viewModel.refresh()
             }
         }
         .onAppear {
