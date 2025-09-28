@@ -20,8 +20,8 @@ struct MarketView: View {
 
     var body: some View {
         ZStack {
-            // Bg Color
-            Color.black.ignoresSafeArea()
+            // Bg Color - extends to all safe areas including navigation
+            Color.black.ignoresSafeArea(.all)
 
             // ScrollView
             ScrollView {
@@ -52,6 +52,7 @@ struct MarketView: View {
                 viewModel.refresh()
             }
         }
+        .navigationBarHidden(true)
         .onAppear {
             bindViewModel()
         }

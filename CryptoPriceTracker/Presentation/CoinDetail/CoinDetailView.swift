@@ -32,48 +32,51 @@ struct CoinDetailView: View {
             if isLoading && coinDetail == nil {
                 LoadingView()
             } else {
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // Coin Detail Header
-                        CoinDetailHeaderView(
-                            coinDetail: coinDetail,
-                            isFavorite: isFavorite,
-                            onFavoriteToggle: {
-                                viewModel.toggleFavorite()
+                VStack {
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // Coin Detail Header
+                            CoinDetailHeaderView(
+                                coinDetail: coinDetail,
+                                isFavorite: isFavorite,
+                                onFavoriteToggle: {
+                                    viewModel.toggleFavorite()
+                                }
+                            )
+                            .padding(.horizontal, 20)
+                            .padding(.top, 20)
+                            // Coin Stats Pill
+                            if let coin = coinDetail {
+                                StatsRowView(coinDetail: coin)
+                                    .padding(.horizontal, 20)
+                                    .padding(.top, 30)
                             }
-                        )
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
-                        // Coin Stats Pill
-                        if let coin = coinDetail {
-                            StatsRowView(coinDetail: coin)
-                                .padding(.horizontal, 20)
-                                .padding(.top, 30)
+                            // Time Period Selector
+                            TimePeriodSelectorView(
+                                selectedPeriod: selectedTimePeriod,
+                                onPeriodSelected: { period in
+                                    viewModel.selectTimePeriod(period)
+                                }
+                            )
+                            .padding(.top, 30)
+                            // Chart
+                            PriceChartView(
+                                chartData: chartData,
+                                isLoading: isChartLoading
+                            )
+                            .padding(.top, 30)
                         }
-                        // Time Period Selector
-                        TimePeriodSelectorView(
-                            selectedPeriod: selectedTimePeriod,
-                            onPeriodSelected: { period in
-                                viewModel.selectTimePeriod(period)
-                            }
-                        )
-                        .padding(.top, 30)
-                        // Chart
-                        PriceChartView(
-                            chartData: chartData,
-                            isLoading: isChartLoading
-                        )
-                        .padding(.top, 30)
-                        // Transfer Button
-                        TransferButtonView(
-                            onTransferTapped: {
-                                // Mock transfer action
-                                print("Transfer btn tapped")
-                            }
-                        )
-                        .padding(.top, 40)
-                        .padding(.bottom, 30)
                     }
+                    .refreshable {
+                        viewModel.refresh()
+                    }
+                    // Transfer Button
+                    TransferButtonView(
+                        onTransferTapped: {
+                            // Mock transfer action
+                            print("Transfer btn tapped")
+                        }
+                    )
                 }
             }
         }
