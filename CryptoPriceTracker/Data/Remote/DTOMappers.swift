@@ -30,8 +30,8 @@ extension MarketDTO {
 extension CoinDetailDTO {
     func toDomain() -> CoinDetail {
         let usdPrice = marketData?.currentPrice?["usd"] ?? 0.0
-        let usdPriceChange = marketData?.priceChange24h?["usd"] ?? 0.0
-        let usdPriceChangePercentage = marketData?.priceChangePercentage24h?["usd"] ?? 0.0
+        let usdPriceChange = marketData?.priceChange24h ?? 0.0
+        let usdPriceChangePercentage = marketData?.priceChangePercentage24h ?? 0.0
         let usdMarketCap = marketData?.marketCap?["usd"] ?? 0.0
         let usdVolume = marketData?.totalVolume?["usd"] ?? 0.0
         

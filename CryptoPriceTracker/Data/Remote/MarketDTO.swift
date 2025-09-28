@@ -58,8 +58,8 @@ struct ImageDTO: Codable {
 
 struct MarketDataDTO: Codable {
     let currentPrice: [String: Double]?
-    let priceChange24h: [String: Double]?
-    let priceChangePercentage24h: [String: Double]?
+    let priceChange24h: Double?
+    let priceChangePercentage24h: Double?
     let marketCap: [String: Double]?
     let totalVolume: [String: Double]?
     let marketCapRank: Int?

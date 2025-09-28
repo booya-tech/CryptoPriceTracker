@@ -99,9 +99,8 @@ final class CoinDetailViewModel {
                     )
                     .catch { _ in Observable.empty() }
             }
-        
         self.chartData = chartDataObservable.asDriver(onErrorJustReturn: [])
-        
+
         // Favorite state (placeholder - will implement CoreData later)
         self.isFavorite = favoriteToggle
             .scan(false) { currentState, _ in !currentState }

@@ -20,8 +20,8 @@ final class NetworkService: NetworkServiceProtocol {
     init() {
         // Adds User-Agent header (CoinGecko recommneds this for identification)
         let configuration = URLSessionConfiguration.default
-        configuration.headers = HTTPHeaders([
-            "User-Agent": "CryptoPriceTracker-iOS/1.0"
+        configuration.headers = HTTPHeaders([ 
+            "User-Agent": "CryptoPriceTracker-iOS/1.0",
         ])
 
         // Max seconds to establish connection
@@ -33,13 +33,10 @@ final class NetworkService: NetworkServiceProtocol {
     }
 
     func request<T: Decodable>(_ endpoint: APIEndpoint) -> Single<T> {
-        return Single.create { [weak self] observer in
-            guard let self = self else {
-                observer(.failure(AppError.unknown("NetworkService deallocated")))
-                return Disposables.create()
-            }
-
+        return Single.create { observer in
             let url = "\(self.baseURL)\(endpoint.path)"
+            print("🌐 Making request to: \(url)")
+            print("📝 Parameters: \(endpoint.parameters)")
 
             let request = self.session.request(
                 url,
@@ -53,8 +50,10 @@ final class NetworkService: NetworkServiceProtocol {
                     case .success(let data):
                         observer(.success(data))
                     case .failure(let error):
-                        let appError = self.mapError(error, response: response.response)
-                        observer(.failure(appError))
+                    print("❌ Network Error: \(error)")
+                    print("📱 Response: \(String(describing: response.response))")
+                    let appError = self.mapError(error, response: response.response)
+                    observer(.failure(appError))
                 }
             }
 

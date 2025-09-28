@@ -54,7 +54,6 @@ enum APIEndpoint {
             return [
                 "vs_currency": "usd",
                 "days": days,
-                "interval": "hourly"
             ]
         }
     }

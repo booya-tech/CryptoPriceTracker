@@ -100,7 +100,6 @@ struct LineChartView: View {
                     )
                 )
             }
-            .padding(12)
         }
     }
     

@@ -15,23 +15,19 @@ struct StatsRowView: View {
             // Popularity Rank
             StatPillView(
                 title: "POPULARITY",
-                value: "#\(coinDetail.marketCapRank)",
-                isFirst: true
+                value: "#\(coinDetail.marketCapRank)"
             )
             
             // Market Cap
             StatPillView(
                 title: "MARKET CAP",
-                value: PriceFormatter.shared.formatLargeNumber(coinDetail.marketCap),
-                isFirst: false
+                value: PriceFormatter.shared.formatLargeNumber(coinDetail.marketCap)
             )
             
             // Volume
             StatPillView(
                 title: "VOLUME",
-                value: PriceFormatter.shared.formatLargeNumber(coinDetail.volume24h),
-                isFirst: false,
-                isLast: true
+                value: PriceFormatter.shared.formatLargeNumber(coinDetail.volume24h)
             )
         }
         .background(Color.gray.opacity(0.1))
@@ -42,14 +38,10 @@ struct StatsRowView: View {
 struct StatPillView: View {
     let title: String
     let value: String
-    let isFirst: Bool
-    let isLast: Bool
     
-    init(title: String, value: String, isFirst: Bool = false, isLast: Bool = false) {
+    init(title: String, value: String) {
         self.title = title
         self.value = value
-        self.isFirst = isFirst
-        self.isLast = isLast
     }
     
     var body: some View {
@@ -64,19 +56,6 @@ struct StatPillView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(
-            Rectangle()
-                .fill(Color.clear)
-                .overlay(
-                    // Add right border except for last item
-                    (!isLast ?
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 1)
-                        .padding(.vertical, 8)
-                    : nil),
-                )
-        )
     }
 }
 
