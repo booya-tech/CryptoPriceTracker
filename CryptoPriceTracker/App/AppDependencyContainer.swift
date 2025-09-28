@@ -35,7 +35,14 @@ final class AppDependencyContainer {
     favoritesRepository: favoritesRepository
 )
     
-    private init() {}
+    private init() {
+        // Debug: Print database location and contents on app start
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            print("🚀 APP STARTED - CoreData Debug Info:")
+            self.persistenceController.debugPrintDatabaseLocation()
+            self.persistenceController.debugPrintFavorites()
+        }
+    }
 
     // MARK: - ViewModels
     func makeMarketViewModel() -> MarketViewModel {

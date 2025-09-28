@@ -55,3 +55,47 @@ struct PersistenceController {
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
 }
+
+// MARK: - CoreData Debugging Extension
+extension PersistenceController {
+    /// Debug function to print all favorites in CoreData
+    func debugPrintFavorites() {
+        let context = container.viewContext
+        let request: NSFetchRequest<FavoriteCoin> = FavoriteCoin.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "addedAt", ascending: false)]
+        
+        do {
+            let favorites = try context.fetch(request)
+            print("📊 COREDATA DEBUG - Total Favorites: \(favorites.count)")
+            print("================================")
+            
+            if favorites.isEmpty {
+                print("❌ No favorites found in database")
+            } else {
+                for (index, favorite) in favorites.enumerated() {
+                    print("🔹 Favorite \(index + 1):")
+                    print("   ID: \(favorite.id ?? "nil")")
+                    print("   Name: \(favorite.name ?? "nil")")
+                    print("   Symbol: \(favorite.symbol ?? "nil")")
+                    print("   Rank: \(favorite.rank)")
+                    print("   Added: \(favorite.addedAt ?? Date())")
+                    print("   ----------------")
+                }
+            }
+            print("================================")
+        } catch {
+            print("❌ CoreData Debug Error: \(error)")
+        }
+    }
+    
+    /// Debug function to check database file location
+    func debugPrintDatabaseLocation() {
+        guard let storeURL = container.persistentStoreDescriptions.first?.url else {
+            print("❌ Could not find database URL")
+            return
+        }
+        print("📍 CoreData Database Location:")
+        print("   \(storeURL.path)")
+        print("   File exists: \(FileManager.default.fileExists(atPath: storeURL.path))")
+    }
+}

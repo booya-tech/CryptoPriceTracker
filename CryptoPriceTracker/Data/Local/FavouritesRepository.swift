@@ -48,16 +48,27 @@ final class FavoritesRepository: FavoritesRepositoryProtocol {
             }
             
             do {
-                if try self.existsFavorite(id: id) {
+                let wasAlreadyFavorite = try self.existsFavorite(id: id)
+                
+                if wasAlreadyFavorite {
                     try self.removeFavorite(id: id)
+                    print("💔 FAVORITE REMOVED: \(name) (\(id))")
                 } else {
                     try self.addFavorite(id: id, name: name, symbol: symbol, rank: rank)
+                    print("❤️ FAVORITE ADDED: \(name) (\(id))")
                 }
                 
                 try self.context.save()
+                print("💾 CoreData saved successfully")
+                
                 self.updateFavoriteIds()
+                
+                // Debug: Print database contents after toggle
+                PersistenceController.shared.debugPrintFavorites()
+                
                 observer(.completed)
             } catch {
+                print("❌ FAVORITE TOGGLE ERROR: \(error)")
                 observer(.error(error))
             }
             
