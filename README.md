@@ -2,6 +2,13 @@
 
 A modern iOS cryptocurrency price tracking app built with SwiftUI, RxSwift, and clean architecture principles.
 
+## App Preview
+
+| Welcome Screen | Market Overview | Coin Detail |
+|:---:|:---:|:---:|
+| ![Welcome](screenshots/welcome.png) | ![Market](screenshots/market.png) | ![Detail](screenshots/detail.png) |
+| Onboarding with 3D illustration | Live crypto prices & portfolio | Interactive charts & favorites |
+
 ## Features
 
 - **Real-time Market Data** - Live cryptocurrency prices from CoinGecko API
@@ -55,15 +62,6 @@ A modern iOS cryptocurrency price tracking app built with SwiftUI, RxSwift, and 
 3. Build and run (iOS 17+, Xcode 15+)
 
 *No API keys or external setup required*
-
-## How to Use
-
-1. **Welcome Screen** - Tap "Get Started" to enter the app
-2. **Market Overview** - Browse live crypto prices, pull down to refresh
-3. **Coin Details** - Tap any coin to view detailed information
-4. **Price Charts** - Switch between 1W, 1M, 1Y timeframes
-5. **Favorites** - Tap the heart icon to save/remove favorites (persists locally)
-6. **Portfolio** - View mock portfolio cards (demo data)
 
 ## Key Learnings
 
