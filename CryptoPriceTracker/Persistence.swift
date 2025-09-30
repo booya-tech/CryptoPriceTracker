@@ -14,15 +14,28 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+
+        // Sample crypto favorites for preview
+        let sampleCoins = [
+            ("bitcoin", "Bitcoin", "BTC", 1),
+            ("ethereum", "Ethereum", "ETH", 2),
+            ("binancecoin", "BNB", "BNB", 4),
+            ("solana", "Solana", "SOL", 5),
+            ("cardano", "Cardano", "ADA", 8),
+        ]
+
+        for (id, name, symbol, rank) in sampleCoins {
+            let favoriteCoin = FavoriteCoin(context: viewContext)
+            favoriteCoin.id = id
+            favoriteCoin.name = name
+            favoriteCoin.symbol = symbol
+            favoriteCoin.rank = Int16(rank)
+            favoriteCoin.addedAt = Date().addingTimeInterval(-Double.random(in: 0...604800))  // Random within last week
         }
+
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }
@@ -34,6 +47,7 @@ struct PersistenceController {
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "CryptoPriceTracker")
         if inMemory {
+            // /dev/null -> throw away the data
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
@@ -52,6 +66,7 @@ struct PersistenceController {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
         })
+        // Prevents data conflicts when multiple contexts modify the same data
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
 }
